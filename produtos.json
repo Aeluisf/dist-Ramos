@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "nome": "Coca-Cola 2L",
+    "categoria": "refrigerante",
+    "preco": 8.50,
+    "imagem": "img/coca-cola.png"
+  },
+  {
+    "id": 2,
+    "nome": "Heineken Long Neck",
+    "categoria": "cerveja",
+    "preco": 6.00,
+    "imagem": "img/heineken.jpg"
+  },
+  {
+    "id": 3,
+    "nome": "Guaraná Antarctica 2L",
+    "categoria": "refrigerante",
+    "preco": 7.80,
+    "imagem": "img/guarana.png"
+  },
+  {
+    "id": 4,
+    "nome": "Budweiser Long Neck",
+    "categoria": "cerveja",
+    "preco": 5.50,
+    "imagem": "img/budweiser.jpg"
+  }
+]

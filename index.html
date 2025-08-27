@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sua Distribuidora - Mobile</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <header class="header">
+        <h1 class="logo">Dist. Ramos</h1>
+        <div class="header-actions">
+            <input type="text" id="search-input" placeholder="Buscar..." class="search-input-header">
+            <div class="cart-button" aria-label="Abrir carrinho de compras">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="cart-count" class="cart-count">0</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="filters-container">
+            <div id="category-filters" class="category-filters">
+                </div>
+        </section>
+
+        <section id="product-grid" class="product-grid">
+            </section>
+    </main>
+
+    <aside id="cart-sidebar" class="cart-sidebar">
+        <div class="sidebar-header">
+            <h2>Seu Carrinho</h2>
+            <button class="close-sidebar" aria-label="Fechar carrinho">&times;</button>
+        </div>
+        <div id="cart-items" class="cart-items-list">
+            </div>
+        <div class="cart-summary">
+            <p class="cart-total-text">Total: <span id="cart-total" class="cart-total-value">R$ 0,00</span></p>
+        </div>
+        
+        <div class="checkout-form">
+            <h3>Finalizar Pedido</h3>
+            <label for="address">Endereço de Entrega:</label>
+            <input type="text" id="address" placeholder="Rua, Número, Bairro, Cidade..." required>
+            
+            <label for="payment-method">Forma de Pagamento:</label>
+            <select id="payment-method">
+                <option value="pix">PIX</option>
+                <option value="dinheiro">Dinheiro</option>
+                <option value="cartao">Cartão na Entrega</option>
+            </select>
+            <input type="text" id="troco-para" placeholder="Precisa de troco para? (Ex: 50)" class="hidden">
+            
+            <button id="checkout-button" class="checkout-button">
+                <i class="fab fa-whatsapp"></i> Enviar Pedido via WhatsApp
+            </button>
+        </div>
+    </aside>
+
+    <div id="overlay" class="overlay"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
