@@ -10,6 +10,7 @@
     "id": 2,
     "nome": "Heineken Long Neck",
     "categoria": "cerveja",
+    "tamanho": "330ml",
     "preco": 6.00,
     "imagem": "img/heineken.jpg"
   },
@@ -24,7 +25,24 @@
     "id": 4,
     "nome": "Budweiser Long Neck",
     "categoria": "cerveja",
+    "tamanho": "330ml",
     "preco": 5.50,
     "imagem": "img/budweiser.jpg"
+  },
+  {
+    "id": 5,
+    "nome": "Heineken Garrafa",
+    "categoria": "cerveja",
+    "tamanho": "600ml",
+    "preco": 12.00,
+    "imagem": "img/heineken-600.png" 
+  },
+  {
+    "id": 6,
+    "nome": "Corona Extra",
+    "categoria": "cerveja",
+    "tamanho": "330ml",
+    "preco": 7.50,
+    "imagem": "img/corona.png"
   }
 ]

@@ -2,8 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const productGrid = document.getElementById('product-grid');
     const searchInput = document.getElementById('search-input');
     const categoryFiltersContainer = document.getElementById('category-filters');
+    // NOVA REFERÊNCIA: Container para os filtros de tamanho (ML)
+    const subcategoryFiltersContainer = document.getElementById('subcategory-filters');
     
-    // Elementos do Carrinho Lateral
+    // ... (resto das referências do carrinho permanece o mesmo) ...
     const cartButton = document.querySelector('.cart-button');
     const cartSidebar = document.getElementById('cart-sidebar');
     const closeSidebarButton = document.querySelector('.close-sidebar');
@@ -18,13 +20,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let allProducts = [];
     let cart = [];
+    // NOVAS VARIÁVEIS: Para guardar o estado atual dos filtros
+    let currentCategory = 'todos';
+    let currentSubcategory = 'todos';
 
     // --- Funções de Carregamento e Exibição de Produtos ---
     async function fetchProducts() {
         try {
             const response = await fetch('produtos.json');
             allProducts = await response.json();
-            displayProducts(allProducts);
+            applyFilters(); // Agora usamos uma função central para aplicar filtros
             createCategoryFilters();
             loadCartFromLocalStorage();
         } catch (error) {
@@ -32,10 +37,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Função centralizada para aplicar todos os filtros (nome, categoria, subcategoria)
+    function applyFilters() {
+        let filteredProducts = [...allProducts];
+
+        // 1. Filtro por busca de texto
+        const searchTerm = searchInput.value.toLowerCase();
+        if (searchTerm) {
+            filteredProducts = filteredProducts.filter(p => p.nome.toLowerCase().includes(searchTerm));
+        }
+
+        // 2. Filtro por categoria principal
+        if (currentCategory !== 'todos') {
+            filteredProducts = filteredProducts.filter(p => p.categoria === currentCategory);
+        }
+
+        // 3. Filtro por subcategoria (tamanho)
+        if (currentSubcategory !== 'todos' && currentCategory === 'cerveja') {
+            filteredProducts = filteredProducts.filter(p => p.tamanho === currentSubcategory);
+        }
+
+        displayProducts(filteredProducts);
+    }
+
     function displayProducts(products) {
         productGrid.innerHTML = '';
         if (products.length === 0) {
-            productGrid.innerHTML = '<p>Nenhum produto encontrado para sua busca.</p>';
+            productGrid.innerHTML = '<p>Nenhum produto encontrado.</p>';
             return;
         }
         products.forEach(product => {
@@ -47,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p class="price">R$ ${product.preco.toFixed(2)}</p>
                 <button>Adicionar ao Carrinho</button>
             `;
-            // Adicionamos o evento de clique diretamente aqui
             productCard.querySelector('button').addEventListener('click', () => addToCart(product.id));
             productGrid.appendChild(productCard);
         });
@@ -61,9 +88,21 @@ document.addEventListener('DOMContentLoaded', () => {
             button.innerText = category.charAt(0).toUpperCase() + category.slice(1);
             button.classList.add('category-filter-btn');
             button.addEventListener('click', () => {
-                filterByCategory(category);
+                currentCategory = category;
+                currentSubcategory = 'todos'; // Reseta a subcategoria ao trocar a principal
+                
+                // Ativa o botão da categoria clicada
                 document.querySelectorAll('.category-filter-btn').forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
+                
+                // Lógica para mostrar/esconder subcategorias
+                if (category === 'cerveja') {
+                    createSubcategoryFilters();
+                } else {
+                    subcategoryFiltersContainer.innerHTML = ''; // Limpa os filtros de tamanho
+                }
+
+                applyFilters();
             });
             categoryFiltersContainer.appendChild(button);
         });
@@ -71,24 +110,37 @@ document.addEventListener('DOMContentLoaded', () => {
         if (allButton) allButton.classList.add('active');
     }
 
-    // --- Funções de Filtro e Busca ---
-    function filterByName() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const filtered = allProducts.filter(p => p.nome.toLowerCase().includes(searchTerm));
-        displayProducts(filtered);
-    }
+    // NOVA FUNÇÃO: Cria os botões de filtro para os tamanhos das cervejas
+    function createSubcategoryFilters() {
+        // Pega todos os tamanhos únicos apenas dos produtos da categoria 'cerveja'
+        const sizes = ['todos', ...new Set(allProducts.filter(p => p.categoria === 'cerveja').map(p => p.tamanho))];
+        subcategoryFiltersContainer.innerHTML = '';
 
-    function filterByCategory(category) {
-        if (category === 'todos') {
-            displayProducts(allProducts);
-        } else {
-            const filtered = allProducts.filter(p => p.categoria === category);
-            displayProducts(filtered);
-        }
+        sizes.forEach(size => {
+            const button = document.createElement('button');
+            button.innerText = size;
+            button.classList.add('subcategory-filter-btn');
+            button.addEventListener('click', () => {
+                currentSubcategory = size;
+                
+                // Ativa o botão de tamanho clicado
+                document.querySelectorAll('.subcategory-filter-btn').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                applyFilters();
+            });
+            subcategoryFiltersContainer.appendChild(button);
+        });
+        const allSizesButton = subcategoryFiltersContainer.querySelector('.subcategory-filter-btn');
+        if (allSizesButton) allSizesButton.classList.add('active');
     }
     
-    searchInput.addEventListener('input', filterByName);
+    // Atualiza o listener do input de busca para usar a função central
+    searchInput.addEventListener('input', applyFilters);
 
+    // --- Lógica do Carrinho (PERMANECE IGUAL) ---
+    // ... (Copie e cole toda a sua lógica de addToCart, removeFromCart, updateItemQuantity, updateCartDisplay, etc., aqui. Ela não precisa mudar.)
+    // ...
     // --- Lógica do Carrinho ---
     function addToCart(productId) {
         const product = allProducts.find(p => p.id === productId);
@@ -123,9 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // =======================================================================
-    // AQUI ESTÁ A CORREÇÃO PRINCIPAL
-    // =======================================================================
     function updateCartDisplay() {
         cartItemsContainer.innerHTML = '';
         let total = 0;
@@ -137,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
             cart.forEach(item => {
                 const itemElement = document.createElement('div');
                 itemElement.className = 'cart-item';
-                // Removemos os 'onclick' daqui
                 itemElement.innerHTML = `
                     <img src="${item.imagem}" alt="${item.nome}">
                     <div class="cart-item-details">
@@ -152,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
 
-                // E adicionamos os eventos de clique diretamente aos botões aqui
                 itemElement.querySelector('.decrease-btn').addEventListener('click', () => updateItemQuantity(item.id, -1));
                 itemElement.querySelector('.increase-btn').addEventListener('click', () => updateItemQuantity(item.id, 1));
                 itemElement.querySelector('.remove-btn').addEventListener('click', () => removeFromCart(item.id));
@@ -239,6 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.open(whatsappUrl, '_blank');
     });
+
 
     // --- Inicialização ---
     fetchProducts();
